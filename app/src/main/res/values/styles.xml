@@ -1,0 +1,26 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimaryDark">#1565C0</item>
+        <item name="colorPrimary">#2196F3</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:foreground">?android:attr/windowContentOverlay</item>
+     </style>
+    <style name="ActionBarStyle" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="elevation">0dp</item>
+    </style>
+    <style name="NoActionBarAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">#1565C0</item>
+        <item name="colorPrimary">#2196F3</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:foreground">?android:attr/windowContentOverlay</item>
+    </style>
+    <style name="DialogAppTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimaryDark">#1565C0</item>
+        <item name="colorPrimary">#2196F3</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:foreground">?android:attr/windowContentOverlay</item>
+    </style>
+
+</resources>

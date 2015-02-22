@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimaryDark">@android:color/white</item>
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:foreground">?android:attr/windowContentOverlay</item>
+    </style>
+    <style name="ActionBarStyle" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="NoActionBarAppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimaryDark">#1565C0</item>
+        <item name="colorPrimary">#2196F3</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:foreground">?android:attr/windowContentOverlay</item>
+    </style>
+
+    <style name="positiveButton" parent="AppTheme">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:minWidth">90dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="elevation">5dp</item>
+    </style>
+
+    <style name="negativeButton" parent="AppTheme">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:minWidth">90dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="elevation">5dp</item>
+    </style>
+
+    <style name="naturalButton" parent="AppTheme">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:minWidth">90dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Button</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="elevation">5dp</item>
+    </style>
+
+    <style name="DialogAppTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimaryDark">#1565C0</item>
+        <item name="colorPrimary">#2196F3</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:foreground">?android:attr/windowContentOverlay</item>
+    </style>
+
+</resources>
