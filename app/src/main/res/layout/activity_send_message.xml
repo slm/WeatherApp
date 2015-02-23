@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="com.fkweather.SendMessage"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Mesaj: w"
+        android:id="@+id/msg"
+        android:visibility="gone"/>
+
+    <com.beardedhen.androidbootstrap.BootstrapEditText
+        android:id="@+id/msgedit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Komikli ileti"
+        bootstrap:bb_type="default"
+        bootstrap:be_roundedCorners="true"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="(&lt;c>&lt;/c> tagları arasına yazığınız sözcük renklenir.)"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Kullanıcı adı:"
+        android:id="@+id/name"
+        android:visibility="gone"/>
+
+
+    <com.beardedhen.androidbootstrap.BootstrapEditText
+        android:id="@+id/name_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Kullanıcı Adı"
+        bootstrap:be_roundedCorners="true"
+        android:gravity="center"
+        bootstrap:bb_type="default"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Kullanıcı Url (Twitter,Facebook)"
+        android:id="@+id/url"
+        android:visibility="gone"/>
+
+
+    <com.beardedhen.androidbootstrap.BootstrapEditText
+        android:id="@+id/url_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Url (Facebook olur twitter olur maksat isteyen sana ulaşabilsin.)"
+        bootstrap:be_roundedCorners="true"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        bootstrap:bb_type="default"
+        android:layout_marginBottom="10dp"/>
+
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/send"
+        android:text="Gönder"
+        bootstrap:bb_roundedCorners="true"
+        bootstrap:bb_icon_right="fa-send"
+        bootstrap:bb_type="default"
+        android:layout_marginLeft="15dp"/>
+
+</LinearLayout>

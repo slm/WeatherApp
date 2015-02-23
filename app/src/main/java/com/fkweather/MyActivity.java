@@ -10,7 +10,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.BoolRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Spannable;
@@ -24,9 +26,14 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.fkweather.models.LocateWeather;
+import com.fkweather.models.Message;
 import com.github.lzyzsd.randomcolor.RandomColor;
+import com.google.gson.Gson;
 import com.pwittchen.weathericonview.library.WeatherIconView;
+
+import java.util.Random;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -39,6 +46,7 @@ import retrofit.client.Response;
 public class MyActivity extends FragmentActivity implements LocationListener{
     LocationManager locationManager;
     WeatherClient service;
+    MessageClient mservice;
     String provider;
     WeatherIconView tv1 ;
     LocationListener locationListener = this;
@@ -56,6 +64,11 @@ public class MyActivity extends FragmentActivity implements LocationListener{
                 .build();
 
         service = restAdapter.create(WeatherClient.class);
+        RestAdapter restAdapter2 = new RestAdapter.Builder()
+                .setEndpoint("http://692f1f7a.ngrok.com")
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
+        mservice = restAdapter2.create(MessageClient.class);
 
         Criteria criteria = new Criteria();
         criteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -124,19 +137,45 @@ public class MyActivity extends FragmentActivity implements LocationListener{
         locationManager.removeUpdates(locationListener);
         service.getWeather(location.getLatitude(),location.getLongitude(),"f9024481848eeb908686e6befcc5eb8d",new Callback<LocateWeather>() {
             @Override
-            public void success(LocateWeather locateWeather, Response response) {
+            public void success(final LocateWeather locateWeather, Response response) {
 
-                PlaceholderFragment fragment =new PlaceholderFragment();
-                Bundle bundle = new Bundle();
-                bundle.putDouble("tempkelvin",Math.round(locateWeather.getMain().getTemp()));
-                bundle.putDouble("tempcelcius",Math.round(locateWeather.getMain().getTemp()- 273.15));
-                bundle.putString("city",locateWeather.getName());
-                bundle.putString("country",locateWeather.getSys().getCountry());
-                fragment.setArguments(bundle);
-                tv1.clearAnimation();
-                tv1.setVisibility(View.GONE);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, fragment).setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
+
+                mservice.getMessage((int) Math.round(locateWeather.getMain().getTemp() - 273.15), new Callback<Message[]>() {
+
+                    @Override
+                    public void success(Message[] messa, Response response) {
+                        int r=randInt(0,messa.length-1);
+                        Message m = messa[r];
+                        PlaceholderFragment fragment = new PlaceholderFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putDouble("tempkelvin", Math.round(locateWeather.getMain().getTemp()));
+                        bundle.putDouble("tempcelcius", Math.round(locateWeather.getMain().getTemp()- 273.15));
+                        bundle.putString("city", locateWeather.getName());
+                        bundle.putString("country", locateWeather.getSys().getCountry());
+                        bundle.putString("message", m.getFields().getText());
+                        bundle.putString("userlink", m.getFields().getSendingUserLink());
+                        bundle.putString("username", m.getFields().getSendingUserName());
+                        bundle.putString("logoid", locateWeather.getWeather().get(0).getIcon());
+
+
+
+                        fragment.setArguments(bundle);
+                        tv1.clearAnimation();
+                        tv1.setVisibility(View.GONE);
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, fragment).setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out).commit();
+
+
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+
+
 
             }
 
@@ -146,6 +185,20 @@ public class MyActivity extends FragmentActivity implements LocationListener{
                 Log.i("error",error.getMessage());
             }
         });
+    }
+
+
+    public static int randInt(int min, int max) {
+
+        // NOTE: Usually this should be a field rather than a method
+        // variable so that it is not re-seeded every call.
+        Random rand = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
     }
 
     @Override
@@ -162,12 +215,10 @@ public class MyActivity extends FragmentActivity implements LocationListener{
 
     @Override
     public void onProviderEnabled(String provider) {
-
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
     }
 
 
@@ -192,30 +243,65 @@ public class MyActivity extends FragmentActivity implements LocationListener{
 
         @InjectView(R.id.message)
         TextView message;
+
+        @InjectView(R.id.sendegonder)
+        BootstrapButton sendegonder;
+
+        @InjectView(R.id.gonderen)
+        BootstrapButton gonderen;
+
+
         public PlaceholderFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_my, container, false);
             ButterKnife.inject(this,rootView);
             Bundle bundle = getArguments();
             int tempkelvin = (int) bundle.getDouble("tempkelvin");
-            int tempcelcius =(int) bundle.getDouble("tempcelcius");
+            final int tempcelcius =(int) bundle.getDouble("tempcelcius");
             String city = bundle.getString("city");
             String country = bundle.getString("country");
-            Log.i("log",tempkelvin+"");
+            String msg = bundle.getString("message");
+            final String userlink = bundle.getString("userlink");
+            String username = bundle.getString("username");
+            String logoid = bundle.getString("logoid");
+
+
+            gonderen.setText(gonderen.getText().toString()+" "+username);
+            gonderen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(userlink));
+                    startActivity(i);
+                }
+            });
+
+            sendegonder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getActivity(),SendMessage.class);
+                    i.putExtra("temp",tempcelcius);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                }
+            });
+
+            Log.i("log", tempkelvin + "");
             Log.i("log",tempcelcius+"");
             Log.i("log",city+"");
             Log.i("log",country+"");
 
             this.message.setLineSpacing(-30f, 1f);
-            String msg = "Götün <c>dondu</c> dimi ? :))";
             int start =msg.indexOf("<c>");
             int end =  msg.indexOf("</c>")-3;
 
             this.message.setText(msg.replaceAll("<c>","").replace("</c>",""), TextView.BufferType.SPANNABLE);
+
             Spannable s = (Spannable) this.message.getText();
 
 
@@ -230,12 +316,119 @@ public class MyActivity extends FragmentActivity implements LocationListener{
             }else{
 
             }
+            try{
             s.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             this.message.setText(s);
 
+            }catch (java.lang.IndexOutOfBoundsException e){
+                this.message.setText(s);
+            }
 
 
-            icon.setIconResource(getString(R.string.wi_snow_wind));
+
+            if(logoid.equals("01d")){
+
+                icon.setIconResource(getString(R.string.wi_sunset));
+
+            }
+
+            if(logoid.contains("01n")){
+
+                icon.setIconResource(getString(R.string.wi_night_clear));
+
+            }
+
+
+            if(logoid.contains("02d")){
+
+                icon.setIconResource(getString(R.string.wi_day_cloudy));
+
+            }
+            if(logoid.contains("02n")){
+
+                icon.setIconResource(getString(R.string.wi_day_cloudy));
+
+            }
+
+
+
+            if(logoid.contains("03d")){
+
+                icon.setIconResource(getString(R.string.wi_cloud));
+
+            }
+            if(logoid.contains("03n")){
+
+                icon.setIconResource(getString(R.string.wi_cloud));
+
+            }
+
+
+            if(logoid.contains("04d")){
+
+                icon.setIconResource(getString(R.string.wi_cloudy));
+
+            }
+            if(logoid.contains("04n")){
+
+                icon.setIconResource(getString(R.string.wi_cloudy));
+
+            }
+
+
+            if(logoid.contains("09d")){
+
+                icon.setIconResource(getString(R.string.wi_showers));
+
+            }
+            if(logoid.contains("09n")){
+
+                icon.setIconResource(getString(R.string.wi_showers));
+
+            }
+
+
+
+            if(logoid.contains("10d")){
+
+                icon.setIconResource(getString(R.string. wi_day_showers));
+
+            }
+            if(logoid.contains("10n")){
+
+                icon.setIconResource(getString(R.string. wi_night_showers));
+
+            }
+
+
+            if(logoid.contains("11d")){
+                icon.setIconResource(getString(R.string.wi_day_thunderstorm));
+            }
+            if(logoid.contains("11n")){
+                icon.setIconResource(getString(R.string. wi_night_thunderstorm));
+            }
+
+
+            if(logoid.contains("13d")){
+                icon.setIconResource(getString(R.string.wi_snow));
+            }
+            if(logoid.contains("13n")){
+                icon.setIconResource(getString(R.string.wi_night_alt_snow));
+            }
+
+
+            if(logoid.contains("50d")){
+                icon.setIconResource(getString(R.string.wi_fog));
+            }
+            if(logoid.contains("50n")){
+                icon.setIconResource(getString(R.string.wi_fog));
+            }
+
+
+
+
+
+
 
 
             temp.setText(""+tempcelcius);
@@ -245,6 +438,8 @@ public class MyActivity extends FragmentActivity implements LocationListener{
 
             return rootView;
         }
+
+
     }
 
 
