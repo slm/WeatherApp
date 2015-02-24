@@ -65,7 +65,7 @@ public class MyActivity extends FragmentActivity implements LocationListener{
 
         service = restAdapter.create(WeatherClient.class);
         RestAdapter restAdapter2 = new RestAdapter.Builder()
-                .setEndpoint("http://692f1f7a.ngrok.com")
+                .setEndpoint("http://5c1d4339.ngrok.com")
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
         mservice = restAdapter2.create(MessageClient.class);
