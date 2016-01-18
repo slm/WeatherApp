@@ -46,7 +46,6 @@ import retrofit.client.Response;
 public class MyActivity extends FragmentActivity implements LocationListener{
     LocationManager locationManager;
     WeatherClient service;
-    MessageClient mservice;
     String provider;
     WeatherIconView tv1 ;
     LocationListener locationListener = this;
@@ -64,11 +63,6 @@ public class MyActivity extends FragmentActivity implements LocationListener{
                 .build();
 
         service = restAdapter.create(WeatherClient.class);
-        RestAdapter restAdapter2 = new RestAdapter.Builder()
-                .setEndpoint("http://5c1d4339.ngrok.com")
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .build();
-        mservice = restAdapter2.create(MessageClient.class);
 
         Criteria criteria = new Criteria();
         criteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -92,15 +86,15 @@ public class MyActivity extends FragmentActivity implements LocationListener{
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+        builder.setMessage("GPS'in kapalı gözüküyor. Açmadan devam edemezsin.")
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Aç", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         Intent i =new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(i, 0);
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Çıkış Yap", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
                         finish();
@@ -109,6 +103,7 @@ public class MyActivity extends FragmentActivity implements LocationListener{
         final AlertDialog alert = builder.create();
         alert.show();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -140,21 +135,12 @@ public class MyActivity extends FragmentActivity implements LocationListener{
             public void success(final LocateWeather locateWeather, Response response) {
 
 
-                mservice.getMessage((int) Math.round(locateWeather.getMain().getTemp() - 273.15), new Callback<Message[]>() {
-
-                    @Override
-                    public void success(Message[] messa, Response response) {
-                        int r=randInt(0,messa.length-1);
-                        Message m = messa[r];
                         PlaceholderFragment fragment = new PlaceholderFragment();
                         Bundle bundle = new Bundle();
                         bundle.putDouble("tempkelvin", Math.round(locateWeather.getMain().getTemp()));
                         bundle.putDouble("tempcelcius", Math.round(locateWeather.getMain().getTemp()- 273.15));
                         bundle.putString("city", locateWeather.getName());
                         bundle.putString("country", locateWeather.getSys().getCountry());
-                        bundle.putString("message", m.getFields().getText());
-                        bundle.putString("userlink", m.getFields().getSendingUserLink());
-                        bundle.putString("username", m.getFields().getSendingUserName());
                         bundle.putString("logoid", locateWeather.getWeather().get(0).getIcon());
 
 
@@ -173,33 +159,8 @@ public class MyActivity extends FragmentActivity implements LocationListener{
                         error.printStackTrace();
                     }
                 });
-
-
-
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.i("error",error.getUrl());
-                Log.i("error",error.getMessage());
-            }
-        });
     }
 
-
-    public static int randInt(int min, int max) {
-
-        // NOTE: Usually this should be a field rather than a method
-        // variable so that it is not re-seeded every call.
-        Random rand = new Random();
-
-        // nextInt is normally exclusive of the top value,
-        // so add 1 to make it inclusive
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return randomNum;
-    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -244,13 +205,6 @@ public class MyActivity extends FragmentActivity implements LocationListener{
         @InjectView(R.id.message)
         TextView message;
 
-        @InjectView(R.id.sendegonder)
-        BootstrapButton sendegonder;
-
-        @InjectView(R.id.gonderen)
-        BootstrapButton gonderen;
-
-
         public PlaceholderFragment() {
         }
 
@@ -263,38 +217,23 @@ public class MyActivity extends FragmentActivity implements LocationListener{
             Bundle bundle = getArguments();
             int tempkelvin = (int) bundle.getDouble("tempkelvin");
             final int tempcelcius =(int) bundle.getDouble("tempcelcius");
+            String logoid = bundle.getString("logoid");
             String city = bundle.getString("city");
             String country = bundle.getString("country");
-            String msg = bundle.getString("message");
-            final String userlink = bundle.getString("userlink");
-            String username = bundle.getString("username");
-            String logoid = bundle.getString("logoid");
+            String msg ="";
 
+            if(tempcelcius<=0){
+                msg = "Hiç yataktan çıkma hava çok <c>soğuk.</c>";
+            }else if(tempcelcius<=5){
+                msg = "Hava <c>buzz</c> gibi hesaplarken üşüdüm.";
+            }else if(tempcelcius<=10){
+                msg = "Havayı sıcak sanıp armut gibi çıkma <c>üşürsün</c> üstüne bişeyler al.";
+            }else if(tempcelcius<=20){
+                msg = "Hava <c>fena değil</c> fakat bence yinede çıkma yataktan.";
+            }else if(tempcelcius<=30){
+                msg = "Dışarısı <c>yanıyor</c> öğle saatlerinde ortalarda armut gibi dolaşma.";
+            }
 
-            gonderen.setText(gonderen.getText().toString()+" "+username);
-            gonderen.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(userlink));
-                    startActivity(i);
-                }
-            });
-
-            sendegonder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(getActivity(),SendMessage.class);
-                    i.putExtra("temp",tempcelcius);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                }
-            });
-
-            Log.i("log", tempkelvin + "");
-            Log.i("log",tempcelcius+"");
-            Log.i("log",city+"");
-            Log.i("log",country+"");
 
             this.message.setLineSpacing(-30f, 1f);
             int start =msg.indexOf("<c>");
@@ -307,14 +246,12 @@ public class MyActivity extends FragmentActivity implements LocationListener{
 
             RandomColor randomColor = new RandomColor();
             int color = Color.BLACK;
-            if(tempcelcius<0){
+            if(tempcelcius<=10){
                 color =randomColor.random(RandomColor.Color.BLUE, 10)[0];
-            }else if(tempcelcius>20){
+            }else if(tempcelcius<=20){
                 color =randomColor.random(RandomColor.Color.GREEN, 10)[0];
-            }else if(tempcelcius>28){
+            }else if(tempcelcius<=30){
                 color =randomColor.random(RandomColor.Color.RED, 10)[0];
-            }else{
-
             }
             try{
             s.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -426,15 +363,9 @@ public class MyActivity extends FragmentActivity implements LocationListener{
 
 
 
-
-
-
-
-
             temp.setText(""+tempcelcius);
             cityname.setText(""+city);
             this.country.setText("" + country);
-
 
             return rootView;
         }

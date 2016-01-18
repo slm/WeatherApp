@@ -28,6 +28,6 @@ dependencies {
     compile 'com.android.support:support-v4:21.0.+'
     compile 'me.grantland:autofittextview:0.2.+'
     compile 'com.github.lzyzsd.randomcolor:library:1.0.0'
-    compile 'com.beardedhen:androidbootstrap:+'
+    compile 'com.beardedhen:androidbootstrap:2.0.0'
     compile project(":WeatherIcon");
 }
