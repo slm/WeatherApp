@@ -20,11 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:theme="@style/Theme.AppCompat.Light.Dialog"
-            android:name=".SendMessage"
-            android:label="@string/title_activity_send_message" >
-        </activity>
+
     </application>
 
 </manifest>

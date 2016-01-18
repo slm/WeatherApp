@@ -14,7 +14,7 @@ public class LocateWeather {
     @Expose
     private Sys sys;
     @Expose
-    private List<Weather> weather = new ArrayList<Weather>();
+    private List<Weather> weather = new ArrayList<>();
     @Expose
     private String base;
     @Expose
